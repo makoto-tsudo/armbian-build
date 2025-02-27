@@ -1,0 +1,149 @@
+diff --git a/arch/arm/dts/rk3588-rock-5b.dts b/arch/arm/dts/rk3588-rock-5b.dts
+index 0598c712814..57e059d8908 100644
+--- a/arch/arm/dts/rk3588-rock-5b.dts
++++ b/arch/arm/dts/rk3588-rock-5b.dts
+@@ -73,6 +73,21 @@
+ 		regulator-always-on;
+ 		vin-supply = <&vcc5v0_sys>;
+ 	};
++
++        vcc5v0_host: vcc5v0-host-regulator {
++                u-boot,dm-pre-reloc;
++                compatible = "regulator-fixed";
++                regulator-name = "vcc5v0_host";
++                regulator-boot-on;
++                regulator-always-on;
++                regulator-min-microvolt = <5000000>;
++                regulator-max-microvolt = <5000000>;
++                enable-active-high;
++                gpio = <&gpio4 RK_PB0 GPIO_ACTIVE_HIGH>;
++                pinctrl-names = "default";
++                pinctrl-0 = <&vcc5v0_host_en>;
++                vin-supply = <&vcc5v0_sys>;
++        };
+ };
+ 
+ &pcie3x4 {
+@@ -86,3 +101,99 @@
+ 	u-boot,dm-pre-reloc;
+ 	status = "okay";
+ };
++
++/*******************
++* grf models
++********************/
++&usb2phy2_grf {
++        u-boot,dm-pre-reloc;
++        status = "okay";
++};
++
++&usb2phy3_grf {
++        u-boot,dm-pre-reloc;
++        status = "okay";
++};
++
++/*******************
++* phy
++********************/
++&u2phy1 {
++        u-boot,dm-pre-reloc;
++        status = "okay";
++};
++
++&u2phy1_otg {
++        u-boot,dm-pre-reloc;
++        status = "okay";
++};
++
++&u2phy2 {
++        u-boot,dm-pre-reloc;
++        status = "okay";
++};
++
++&u2phy2_host {
++        u-boot,dm-pre-reloc;
++        phy-supply = <&vcc5v0_sys>;
++        status = "okay";
++};
++
++&u2phy3 {
++        u-boot,dm-pre-reloc;
++        status = "okay";
++};
++
++&u2phy3_host {
++        u-boot,dm-pre-reloc;
++        phy-supply = <&vcc5v0_host>;
++        status = "okay";
++};
++
++&combphy2_psu {
++        u-boot,dm-pre-reloc;
++        status = "okay";
++};
++
++/*******************
++* controlers
++********************/
++&usb_host0_ehci {
++        u-boot,dm-pre-reloc;
++        status = "okay";
++};
++
++&usb_host0_ohci {
++        u-boot,dm-pre-reloc;
++        status = "okay";
++};
++
++&usb_host1_ehci {
++        u-boot,dm-pre-reloc;
++        status = "okay";
++};
++
++&usb_host1_ohci {
++        u-boot,dm-pre-reloc;
++        status = "okay";
++};
++
++&usbhost3_0 {
++        u-boot,dm-pre-reloc;
++        status = "okay";
++};
++
++&usbhost_dwc3_0 {
++        u-boot,dm-pre-reloc;
++        status = "okay";
++};
++
++&pinctrl {
++        usb {
++                u-boot,dm-pre-reloc;
++                vcc5v0_host_en: vcc5v0-host-en {
++                        u-boot,dm-pre-reloc;
++                        rockchip,pins = <4 RK_PB0 RK_FUNC_GPIO &pcfg_pull_none>;
++                };
++        };
++};
+diff --git a/configs/rock-5b-rk3588_defconfig b/configs/rock-5b-rk3588_defconfig
+index 6832279aad6..2a298ef18ad 100644
+--- a/configs/rock-5b-rk3588_defconfig
++++ b/configs/rock-5b-rk3588_defconfig
+@@ -7,6 +7,7 @@ CONFIG_SPL_LIBGENERIC_SUPPORT=y
+ CONFIG_SYS_MALLOC_F_LEN=0x80000
+ CONFIG_SPL_FIT_GENERATOR="arch/arm/mach-rockchip/make_fit_atf.sh"
+ CONFIG_ROCKCHIP_RK3588=y
++CONFIG_ROCKCHIP_USB_BOOT=y
+ CONFIG_ROCKCHIP_BOOTDEV="mmc 0"
+ CONFIG_ROCKCHIP_FIT_IMAGE=y
+ CONFIG_ROCKCHIP_HWID_DTB=y
+@@ -33,8 +34,8 @@ CONFIG_SPL_FIT_IMAGE_POST_PROCESS=y
+ CONFIG_SPL_FIT_HW_CRYPTO=y
+ # CONFIG_SPL_SYS_DCACHE_OFF is not set
+ CONFIG_BOOTDELAY=0
+-CONFIG_DISABLE_CONSOLE=y
+-CONFIG_SYS_CONSOLE_INFO_QUIET=y
++# CONFIG_DISABLE_CONSOLE is not set
++# CONFIG_SYS_CONSOLE_INFO_QUIET is not set
+ # CONFIG_DISPLAY_CPUINFO is not set
+ CONFIG_ANDROID_BOOTLOADER=y
+ CONFIG_ANDROID_AVB=y
